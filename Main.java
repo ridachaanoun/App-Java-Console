@@ -71,6 +71,44 @@ abstract class Operation {
 }
 
 
+// deposit class
+class Deposit extends Operation {
+
+    private String Source;
+
+
+    public Deposit(BigDecimal amount, String Source) {
+        super(amount);
+        this.source = Source ;
+    }
+
+    public String getSource() {
+        return source;
+    }
+    
+    // override display method
+    public void display() {
+        System.out.println("Deposit | Amount: " + amount + " | Source: " + source + " | Date: " + date);
+    }
+}
+class withdraw extends Operation {
+
+    private String destination;
+
+    public withdraw(BigDecimal amount, String destination) {
+        super(amount);
+        this.destination = destination;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+    // override display method
+    public void display() {
+        System.out.println("Withdrawal | Amount: " + amount + " | Destination: " + destination + " | Date: " + date);
+    }
+    
+}
 
 class Main {
     public static void main(String[] args) {
