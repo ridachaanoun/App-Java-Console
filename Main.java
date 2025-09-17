@@ -51,6 +51,27 @@ abstract class Account {
     };
 }
 
+
+// abstract class operation
+abstract class Operation {
+    protected UUID id;
+    protected LocalDateTime date;
+    protected BigDecimal amount;
+
+    public Operation(BigDecimal amount) {
+        this.date = LocalDateTime.now();
+        this.amount = amount;
+    }
+
+    public LocalDateTime getDate() { return date; }
+    public BigDecimal getAmount() { return amount; }
+    public UUID getId() { return id; }
+
+    public abstract void display();
+}
+
+
+
 class Main {
     public static void main(String[] args) {
 
