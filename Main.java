@@ -50,6 +50,38 @@ abstract class Account {
 
     };
 }
+// current account class
+class CurrentAccount extends Account {
+
+    private BigDecimal overdraftLimit ;
+
+    public CurrentAccount(BigDecimal overdraftLimit, BigDecimal Balance) {
+        super(Balance);
+        this.overdraftLimit = overdraftLimit;
+    }
+
+    //override withdraw method
+    public void withdraw(BigDecimal amount,String destination){
+        validatePositive(amount);
+        BigDecimal newBalance = balance.subtract(amount);
+        if (newBalance < -overdraftLimit) {
+            throw new RuntimeException("Withdrawal exceeds overdraft limit");
+        }
+        balance = newBalance;
+        addOperation(new Withdraw(amount, destination));
+    }
+
+    // override displayDetails method
+    public void displayDetails() {
+        System.out.println("CurrentAccount: " + code +
+            " | Balance: " + balance +
+            " | Overdraft: " + overdraftLimit);
+    }
+
+    public BigDecimal getOverdraftLimit() {
+        return overdraftLimit;
+    }
+}
 
 
 // abstract class operation
@@ -69,7 +101,6 @@ abstract class Operation {
 
     public abstract void display();
 }
-
 
 // deposit class
 class Deposit extends Operation {
