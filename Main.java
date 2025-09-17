@@ -82,7 +82,39 @@ class CurrentAccount extends Account {
         return overdraftLimit;
     }
 }
+// savings account class
+class SavingsAccount extends Account {
+    private BigDecimal interestRate;
 
+    public SavingsAccount(BigDecimal Balance, BigDecimal interestRate) {
+        super(Balance);
+        this.interestRate = interestRate;
+    }
+
+    public BigDecimal getInterestRate() { return interestRate; }
+
+    
+    public void withdraw(BigDecimal amount, String destination) {
+        validatePositive(amount);
+        if (balance.compareTo(amount) < 0) {
+            throw new RuntimeException("Insufficient funds for withdrawal");
+        }
+        balance = balance.subtract(amount);
+        addOperation(new Withdrawal(amount, destination));
+    }
+
+
+    public BigDecimal calcInterest() {
+        return balance.multiply(interestRate);
+    }
+
+    // override displayDetails method
+    public void displayDetails() {
+        System.out.println("SavingsAccount: " + code +
+            " | Balance: " + balance +
+            " | Interest Rate: " + interestRate);
+    }
+}
 
 // abstract class operation
 abstract class Operation {
