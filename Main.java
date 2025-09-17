@@ -4,24 +4,36 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
-// abstaract class acount
+// abstract class account
 abstract class Account {
 
+    private static final AtomicInteger counter = new AtomicInteger(1);
     protected String code;
     protected BigDecimal balance;
     protected List<Operation> operations;
 
     public Account() {
-        this.code = UUID.randomUUID().toString();
+        this.code = generateCode();
         this.balance = BigDecimal.ZERO;
-        this.operations = new ArrayList<Operation>();
+        this.operations = new ArrayList<>();
     }
 
+    public Account(BigDecimal initialBalance) {
+        this.code = generateCode();
+        this.balance = initialBalance;
+        this.operations = new ArrayList<>();
+    }
 
-    public abstract void withdraw (BigDecimal amount, String destination);
-    public abstract void displayDetails ();
+    private String generateCode() {
+        // ensures format CPT-00001, CPT-00002, ...
+        int num = counter.getAndIncrement();
+        return String.format("CPT-%05d", num);
+    }
 
+    public abstract void withdraw(BigDecimal amount, String destination);
+    public abstract void displayDetails();
 
     public String getCode() {
         return code;
@@ -38,18 +50,18 @@ abstract class Account {
             throw new IllegalArgumentException("Amount must be positive");
         }
     }
+
     public void addOperation(Operation op){
         operations.add(op);
     }
 
-
-    public void deposit (BigDecimal amount, String source){
+    public void deposit(BigDecimal amount, String source){
         validatePositive(amount);
         balance = balance.add(amount);
         addOperation(new Deposit(amount, source));
-
-    };
+    }
 }
+
 // current account class
 class CurrentAccount extends Account {
 
@@ -64,7 +76,7 @@ class CurrentAccount extends Account {
     public void withdraw(BigDecimal amount,String destination){
         validatePositive(amount);
         BigDecimal newBalance = balance.subtract(amount);
-        if (newBalance < -overdraftLimit) {
+        if (newBalance.compareTo(overdraftLimit.negate()) < 0) {
             throw new RuntimeException("Withdrawal exceeds overdraft limit");
         }
         balance = newBalance;
@@ -142,23 +154,23 @@ class Deposit extends Operation {
 
     public Deposit(BigDecimal amount, String Source) {
         super(amount);
-        this.source = Source ;
+        this.Source = Source ;
     }
 
     public String getSource() {
-        return source;
+        return Source;
     }
     
     // override display method
     public void display() {
-        System.out.println("Deposit | Amount: " + amount + " | Source: " + source + " | Date: " + date);
+        System.out.println("Deposit | Amount: " + amount + " | Source: " + Source + " | Date: " + date);
     }
 }
-class withdraw extends Operation {
+class Withdraw extends Operation {
 
     private String destination;
 
-    public withdraw(BigDecimal amount, String destination) {
+    public Withdraw(BigDecimal amount, String destination) {
         super(amount);
         this.destination = destination;
     }
